@@ -37,7 +37,7 @@ jobs:
 
     - name: Generate sosreport
       run: |
-        sudo yum install -y sos
+        sudo apt install -y sos
         sudo sosreport --batch --tmp-dir /tmp
 
     - name: Extract sosreport
