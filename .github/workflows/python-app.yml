@@ -50,6 +50,7 @@ jobs:
       run: |
         sosreport_dir=$(ls -d /home/runner/work/sosreport_layout/sosreport_layout/sosreport_extracted/sosreport*)
         sudo cp alter.py $sosreport_dir/alter.py
+        sudo ls $sosreport_dir/*
         sudo python $sosreport_dir/alter.py
     - name: Test with pytest
       run: |
