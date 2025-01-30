@@ -48,8 +48,9 @@ jobs:
 
     - name: Copy Python script to sosreport directory
       run: |
-        cp alter.py sosreport_extracted/
+        cp alter.py sosreport_extracted/sosreport*/alter.py
         ls /home/runner/work/sosreport_layout/sosreport_layout
+        python /home/runner/work/sosreport_layout/sosreport_layout/sosreport_extracted/sosreport*/alter.py
     - name: Test with pytest
       run: |
         pytest
