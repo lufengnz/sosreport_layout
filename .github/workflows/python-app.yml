@@ -44,7 +44,7 @@ jobs:
       run: |
         mkdir -p sosreport_extracted
         sosreport_file=$(ls /tmp/sosreport-*.tar.xz)
-        tar -xf $sosreport_file -C sosreport_extracted
+        tar -xJf $sosreport_file -C sosreport_extracted
 
     - name: Copy Python script to sosreport directory
       run: |
