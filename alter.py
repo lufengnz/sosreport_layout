@@ -71,3 +71,4 @@ print("\n")
 miscellaneous_list = ['egrep -s $ sos_commands/selinux/sestatus', 'grep -s vm.min_free_kbytes sos_commands/kernel/sysctl_-a', 'grep -s sysrq sos_commands/kernel/sysctl_-a', 'grep -s panic sos_commands/kernel/sysctl_-a']
 list(map(lambda cmd: (print(cmd), os.system(cmd), print()), miscellaneous_list))
 
+#######################################################################################
