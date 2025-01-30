@@ -26,7 +26,7 @@ systeminfo_list = [
 print_section("SYSTEM INFO", systeminfo_list)
 
 cpumeminfo_list = [
-    'cat sos_commands/processor/lscpu', 
+    'grep -v Flags sos_commands/processor/lscpu', 
     'grep -s ^Total sos_commands/memory/lsmem_-a_-o_RANGE_SIZE_STATE_REMOVABLE_ZONES_NODE_BLOCK', 
     'egrep -s "Ethernet|Fibre|InfiniBand" sos_commands/pci/lspci_-nnvv'
 ]
