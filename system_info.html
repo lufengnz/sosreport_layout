@@ -1,0 +1,164 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>System Information</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            th, td { border: 1px solid black; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+        </style>
+    </head>
+    <body>
+        <h1>x4-4-brm06-a</h1>
+    <h2>SYSTEM INFO</h2><table><tr><th>Command</th><th>Output</th></tr><tr><td>egrep -hs "^NAME|^VERSION_ID" etc/*release</td><td><pre>NAME="Oracle Linux Server"
+VERSION_ID="8.9"</pre></td></tr><tr><td>cat sos_commands/kernel/uname_-a</td><td><pre>Linux x4-4-brm06-a 5.15.0-201.135.6.el8uek.x86_64 #2 SMP Thu Nov 30 17:54:37 PST 2023 x86_64 x86_64 x86_64 GNU/Linux</pre></td></tr><tr><td>cat sos_commands/host/uptime</td><td><pre>07:34:32 up 20 days, 15:12,  1 user,  load average: 3.20, 1.71, 1.30</pre></td></tr><tr><td>cat sos_commands/systemd/timedatectl</td><td><pre>Local time: Thu 2024-01-11 07:36:09 MST
+           Universal time: Thu 2024-01-11 14:36:09 UTC
+                 RTC time: Thu 2024-01-11 14:35:59
+                Time zone: US/Mountain (MST, -0700)
+System clock synchronized: no
+              NTP service: active
+          RTC in local TZ: no</pre></td></tr></table><h2>CPU & MEMORY INFORMATION</h2><table><tr><th>Command</th><th>Output</th></tr><tr><td>grep -v Flags sos_commands/processor/lscpu</td><td><pre>Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              60
+On-line CPU(s) list: 0-59
+Thread(s) per core:  2
+Core(s) per socket:  15
+Socket(s):           2
+NUMA node(s):        2
+Vendor ID:           GenuineIntel
+BIOS Vendor ID:      Intel
+CPU family:          6
+Model:               62
+Model name:          Intel(R) Xeon(R) CPU E7-8895 v2 @ 2.80GHz
+BIOS Model name:     Intel(R) Xeon(R) CPU E7-8895 v2 @ 2.80GHz
+Stepping:            7
+CPU MHz:             3192.095
+CPU max MHz:         3600.0000
+CPU min MHz:         1200.0000
+BogoMIPS:            5586.25
+Virtualization:      VT-x
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            38400K
+NUMA node0 CPU(s):   0-14,30-44
+NUMA node1 CPU(s):   15-29,45-59</pre></td></tr><tr><td>grep -s ^Total sos_commands/memory/lsmem_-a_-o_RANGE_SIZE_STATE_REMOVABLE_ZONES_NODE_BLOCK</td><td><pre>Total online memory:     256G
+Total offline memory:      0B</pre></td></tr><tr><td>egrep -s "Ethernet|Fibre|InfiniBand" sos_commands/pci/lspci_-nnvv</td><td><pre>a0:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller 10-Gigabit X540-AT2 [8086:1528] (rev 01)
+a0:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller 10-Gigabit X540-AT2 [8086:1528] (rev 01)
+b0:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller 10-Gigabit X540-AT2 [8086:1528] (rev 01)
+b0:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller 10-Gigabit X540-AT2 [8086:1528] (rev 01)</pre></td></tr></table><h2>NETWORK INFORMATION</h2><table><tr><th>Command</th><th>Output</th></tr><tr><td>ls etc/sysconfig/network-scripts/ifcfg-*</td><td><pre>etc/sysconfig/network-scripts/ifcfg-bond0
+etc/sysconfig/network-scripts/ifcfg-bond0.130
+etc/sysconfig/network-scripts/ifcfg-eno1
+etc/sysconfig/network-scripts/ifcfg-eno2-1
+etc/sysconfig/network-scripts/ifcfg-eno3-1
+etc/sysconfig/network-scripts/ifcfg-enp0s29u1u8c2
+etc/sysconfig/network-scripts/ifcfg-lo
+etc/sysconfig/network-scripts/ifcfg-ovirtmgmt</pre></td></tr><tr><td>grep -H -s BONDING_OPTS etc/sysconfig/network-scripts/ifcfg-*</td><td><pre>etc/sysconfig/network-scripts/ifcfg-bond0:BONDING_OPTS="mode=balance-rr miimon=100"</pre></td></tr><tr><td>egrep "bridge|ethernet" sos_commands/networkmanager/nmcli_con</td><td><pre>eno2           a31d75c3-c77e-4a0d-9840-f681010836af  ethernet  eno2      
+eno3           88dd0f7f-ec2a-47d9-8755-9439bc07252f  ethernet  eno3      
+enp0s29u1u8c2  044855f8-76ac-4bbe-8e77-55c63c5960ac  ethernet  --</pre></td></tr></table><h2>OVIRT SPECIFIC INFORMATION</h2><table><tr><th>Command</th><th>Output</th></tr><tr><td>egrep -s -h "ovirt-engine.service|vdsmd.service" sos_commands/systemd/systemctl_list-units | tr -s " "</td><td><pre>supervdsmd.service loaded active running Auxiliary vdsm service for running helper functions as root 
+ vdsmd.service loaded active running Virtual Desktop Server Manager</pre></td></tr><tr><td>egrep -s -h "^ovirt-engine-4|^vdsm|kvm|qemu|libvirt" sos_commands/rpm/* | awk '{print $1}'</td><td><pre>libvirt-daemon-driver-storage-iscsi-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-core-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-core-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-mpath-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-ssh-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-secret-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-libs-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-http-4.50.3.4-1.0.51.el8.noarch
+vdsm-python-4.50.3.4-1.0.51.el8.noarch
+vdsm-4.50.3.4-1.0.51.el8.x86_64
+vdsm-network-4.50.3.4-1.0.51.el8.x86_64
+libvirt-daemon-driver-qemu-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-common-4.50.3.4-1.0.51.el8.noarch
+qemu-kvm-block-gluster-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-config-network-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-gluster-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-kvm-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-api-4.50.3.4-1.0.51.el8.noarch
+python3-libvirt-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-yajsonrpc-4.50.3.4-1.0.51.el8.noarch
+qemu-kvm-block-curl-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-config-nwfilter-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-disk-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-client-4.50.3.4-1.0.51.el8.noarch
+ipxe-roms-qemu-20181214-11.git133f4c47.el8.noarch
+qemu-kvm-block-rbd-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-client-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-nodedev-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-iscsi-direct-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-lock-sanlock-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-iscsi-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-interface-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-img-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-jsonrpc-4.50.3.4-1.0.51.el8.noarch
+libvirt-daemon-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-logical-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-nwfilter-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-scsi-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-common-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-network-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-rbd-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+ipxe-roms-qemu-20181214-11.git133f4c47.el8.noarch
+libvirt-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-client-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-config-network-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-config-nwfilter-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-interface-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-network-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-nodedev-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-nwfilter-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-qemu-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-secret-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-core-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-disk-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-gluster-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-iscsi-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-iscsi-direct-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-logical-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-mpath-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-rbd-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-driver-storage-scsi-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-daemon-kvm-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-libs-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+libvirt-lock-sanlock-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+python3-libvirt-9.0.0-4.module+el8.8.0+90040+e6f08739.x86_64
+qemu-img-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-curl-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-gluster-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-iscsi-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-rbd-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-block-ssh-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-common-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+qemu-kvm-core-7.2.0-6.module+el8.8.0+90040+e6f08739.x86_64
+vdsm-4.50.3.4-1.0.51.el8.x86_64
+vdsm-api-4.50.3.4-1.0.51.el8.noarch
+vdsm-client-4.50.3.4-1.0.51.el8.noarch
+vdsm-common-4.50.3.4-1.0.51.el8.noarch
+vdsm-http-4.50.3.4-1.0.51.el8.noarch
+vdsm-jsonrpc-4.50.3.4-1.0.51.el8.noarch
+vdsm-network-4.50.3.4-1.0.51.el8.x86_64
+vdsm-python-4.50.3.4-1.0.51.el8.noarch
+vdsm-yajsonrpc-4.50.3.4-1.0.51.el8.noarch</pre></td></tr></table><h2>MISCELLANEOUS INFORMATION</h2><table><tr><th>Command</th><th>Output</th></tr><tr><td>egrep -s . sos_commands/selinux/sestatus</td><td><pre>SELinux status:                 disabled</pre></td></tr><tr><td>grep -s vm.min_free_kbytes sos_commands/kernel/sysctl_-a</td><td><pre>vm.min_free_kbytes = 90112</pre></td></tr><tr><td>grep -s sysrq sos_commands/kernel/sysctl_-a</td><td><pre>kernel.sysrq = 16</pre></td></tr><tr><td>grep -s panic sos_commands/kernel/sysctl_-a</td><td><pre>fs.xfs.panic_mask = 0
+kernel.hardlockup_panic = 1
+kernel.hung_task_panic = 0
+kernel.max_rcu_stall_to_panic = 0
+kernel.panic = 0
+kernel.panic_on_io_nmi = 0
+kernel.panic_on_oops = 1
+kernel.panic_on_rcu_stall = 0
+kernel.panic_on_unrecovered_nmi = 0
+kernel.panic_on_warn = 0
+kernel.panic_print = 0
+kernel.softlockup_panic = 0
+kernel.unknown_nmi_panic = 0
+vm.panic_on_oom = 0</pre></td></tr></table></body></html>
