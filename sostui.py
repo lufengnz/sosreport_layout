@@ -1,12 +1,15 @@
 import os
 import subprocess
 import json
+from rich.console import Console
+from rich.table import Table
 
 def run_command(cmd):
     result = subprocess.run(cmd, capture_output=True, text=True, shell=True)
-    return result.stdout.strip() if result.stdout else "N/A"
+    return "\n".join(result.stdout.splitlines()) if result.stdout else "N/A"
 
 def collect_data():
+    console = Console()
     sections = {
         "SYSTEM INFO": [
             'egrep -hs "^NAME|^VERSION_ID" etc/*release', 
@@ -44,8 +47,9 @@ def collect_data():
         json.dump(results, f, indent=4)
     
     print("System information saved to system_info.json")
-
+    
     generate_html(results)
+    display_tui(results, console)
 
 def generate_html(data):
     uname_output = data.get("SYSTEM INFO", {}).get('cat sos_commands/kernel/uname_-a', "System Information")
@@ -71,7 +75,13 @@ def generate_html(data):
     for section, commands in data.items():
         html_content += f"<h2>{section}</h2><table><tr><th>Command</th><th>Output</th></tr>"
         for cmd, output in commands.items():
-            html_content += f"<tr><td>{cmd}</td><td><pre>{output}</pre></td></tr>"
+            first_row = True
+            for line in output.split("\n"):
+                if first_row:
+                    html_content += f"<tr><td>{cmd}</td><td><pre>{line}</pre></td></tr>"
+                    first_row = False
+                else:
+                    html_content += f"<tr><td></td><td><pre>{line}</pre></td></tr>"
         html_content += "</table>"
     
     html_content += "</body></html>"
@@ -80,6 +90,23 @@ def generate_html(data):
         f.write(html_content)
     
     print("System information saved to system_info.html")
+
+def display_tui(data, console):
+    for section, commands in data.items():
+        table = Table(title=section)
+        table.add_column("Command", style="cyan", no_wrap=True)
+        table.add_column("Output", style="magenta")
+        
+        for cmd, output in commands.items():
+            first_row = True
+            for line in output.split("\n"):
+                if first_row:
+                    table.add_row(cmd, line)
+                    first_row = False
+                else:
+                    table.add_row("", line)
+        
+        console.print(table)
 
 if __name__ == "__main__":
     collect_data()
